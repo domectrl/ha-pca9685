@@ -9,6 +9,7 @@ CONF_INVERT = "invert"
 CONF_STEP = "step"
 CONF_LEDS = "leds"
 CONF_PINS = "pins"
+CONF_MULTI = "multi"
 
 MODE_SLIDER = "slider"
 MODE_BOX = "box"

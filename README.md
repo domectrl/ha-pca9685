@@ -84,6 +84,8 @@ number:
   > required: true | type: [int]
 - unique_id: The unique ID of the light.
   > required: false | default: None | type: string
+- multi: If the LED should switch multiple LED pins.
+  > required: false | default: false | type: boolean
 
 ***number specific settings:***
 - numbers: List of the numbers.
@@ -118,6 +120,11 @@ light:
       - name: Lightstrip RGBW
         unique_id: lightstrip_rgbw
         pins: [1,2,4,6]
+        address: 65
+      - name: Lightstrip Multiple
+        unique_id: lightstrip_multiple
+        pins: [1,2,3]
+        multi: true
         address: 65
 
 number:

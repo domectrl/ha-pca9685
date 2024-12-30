@@ -29,6 +29,7 @@ from pwmled.led.rgbw import RgbwLed
 from .const import (
     CONF_FREQUENCY,
     CONF_LEDS,
+    CONF_MULTI,
     CONF_PINS,
     CONST_MAX_INTENSITY,
     CONST_RGB_LED_PINS,
@@ -51,6 +52,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
                     vol.Required(CONF_PINS): vol.All(cv.ensure_list, [cv.positive_int]),
                     vol.Optional(CONF_FREQUENCY): cv.positive_int,
                     vol.Optional(CONF_ADDRESS): cv.byte,
+                    vol.Optional(CONF_MULTI): cv.boolean,
                 }
             ],
         )
@@ -75,9 +77,12 @@ def setup_platform(
             opt_args["address"] = led_conf[CONF_ADDRESS]
         driver = Pca9685Driver(pins, **opt_args)
 
+        multi = led_conf.get(CONF_MULTI, False)
         name = led_conf[CONF_NAME]
         unique_id = led_conf.get(CONF_UNIQUE_ID, None)
-        if len(pins) == CONST_SIMPLE_LED_PINS:
+        if multi:
+            led = PwmSimpleLed(SimpleMultiLed(driver), name, unique_id)
+        elif len(pins) == CONST_SIMPLE_LED_PINS:
             led = PwmSimpleLed(SimpleLed(driver), name, unique_id)
         elif len(pins) == CONST_RGB_LED_PINS:
             led = PwmRgbLed(RgbLed(driver), name, unique_id)
@@ -212,3 +217,14 @@ def _from_hass_color(color: tuple[float, float] | None) -> Color:
         rgb = color_util.color_hs_to_RGB(*color)
         return Color(*tuple(rgb))
     return Color(0, 0, 0)
+
+
+class SimpleMultiLed(SimpleLed):
+    """Represents multiple simple leds that can be controlled."""
+
+    def _get_pwm_values(self, brightness: int | None = None) -> list[int]:
+        """Get the pwm values for the controlled pins."""
+        if brightness is None:
+            brightness = self.brightness
+
+        return [brightness] * len(self._driver.pins)

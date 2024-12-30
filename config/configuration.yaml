@@ -23,6 +23,11 @@ light:
         unique_id: lightstrip_rgbw
         pins: [1,2,4,6]
         address: 65
+      - name: Lightstrip Multiple
+        unique_id: lightstrip_multiple
+        pins: [1,2,3]
+        multi: true
+        address: 65
 
 number:
   - platform: pca9685

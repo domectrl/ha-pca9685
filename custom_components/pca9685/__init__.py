@@ -20,7 +20,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     pca_driver = PCA9685Driver(
         address=int(entry.data[CONF_ADDR]), i2c_bus=entry.data[CONF_BUS]
     )
-    pca_driver.set_pwm_frequency(entry.data[CONF_FREQUENCY])
+    await pca_driver.set_pwm_frequency(entry.data[CONF_FREQUENCY])
 
     pca9685_data = hass.data.setdefault(DOMAIN, {})
     if PCA9685_DRIVERS not in pca9685_data:

@@ -1,10 +1,12 @@
 """Driver code for PCA9685 LED driver."""
 
 import logging
+import asyncio
 from pathlib import Path
 from types import MappingProxyType
 
 from smbus3 import SMBus
+
 
 from .const import CONST_PWM_FREQ_MAX, CONST_PWM_FREQ_MIN
 
@@ -219,7 +221,7 @@ class PCA9685Driver:
         """
         return int(round(self.__oscillator_clock / (4096.0 * frequency)) - 1)
 
-    def set_pwm_frequency(self, value: int) -> None:
+    async def set_pwm_frequency(self, value: int) -> None:
         """
         Set the frequency for all PWM output.
 
@@ -229,7 +231,11 @@ class PCA9685Driver:
         reg_val = self.calc_pre_scale(value)
         _LOGGER.debug("Calculated prescale value is %d", reg_val)
         self.sleep()
+        await asyncio.sleep(
+            0.1
+        )  # Sleep between wrtes is required to prevent from [Errno 121] Remote IO error
         self.write(Registers.PRE_SCALE, reg_val)
+        await asyncio.sleep(0.1)
         self.wake()
 
     def calc_frequency(self, prescale: int) -> int:

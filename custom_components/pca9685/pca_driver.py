@@ -4,7 +4,7 @@ import logging
 from pathlib import Path
 from types import MappingProxyType
 
-from smbus3 import SMBus
+from smbus2 import SMBus
 
 from .const import CONST_PWM_FREQ_MAX, CONST_PWM_FREQ_MIN
 
